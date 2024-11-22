@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancer Screening Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    .options {
+      list-style: none;
+      padding: 0;
+    }
+
+    .options li {
+      margin: 10px 0;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .explanation {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cancer Screening Quiz</h1>
+    <div id="quiz"></div>
+    <button id="submit">Submit</button>
+    <div id="result" class="result hidden"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What is the primary purpose of cancer screening?",
+        options: [
+          "To treat advanced cancer cases.",
+          "To detect cancer early when treatment is most effective.",
+          "To prevent cancer from spreading.",
+          "To eliminate cancer cells from the body."
+        ],
+        answer: 1,
+        explanation: "The goal of cancer screening is early detection, which allows for more effective treatment and better outcomes."
+      },
+      {
+        question: "Which vaccine helps prevent cancers caused by HPV?",
+        options: [
+          "Hepatitis B vaccine",
+          "HPV vaccine",
+          "MMR vaccine",
+          "Tetanus vaccine"
+        ],
+        answer: 1,
+        explanation: "The HPV vaccine protects against high-risk strains of HPV, which cause cervical, anal, and other cancers."
+      },
+      {
+        question: "What is the recommended age range for colorectal cancer screening?",
+        options: [
+          "25–40 years",
+          "40–50 years",
+          "50–74 years",
+          "75+ years"
+        ],
+        answer: 2,
+        explanation: "Colorectal cancer screening is recommended for individuals aged 50–74 to detect early-stage cancer or precancerous polyps."
+      },
+      {
+        question: "Which screening test is commonly used for breast cancer?",
+        options: [
+          "CT scan",
+          "Mammography",
+          "Pap smear",
+          "Ultrasound"
+        ],
+        answer: 1,
+        explanation: "Mammography is the most effective screening method for early detection of breast cancer."
+      },
+      {
+        question: "How does physical activity reduce cancer risk?",
+        options: [
+          "By directly killing cancer cells.",
+          "By lowering inflammation and regulating hormones.",
+          "By strengthening bones.",
+          "By improving digestion."
+        ],
+        answer: 1,
+        explanation: "Physical activity reduces cancer risk by lowering inflammation and regulating hormones like insulin and estrogen."
+      },
+      {
+        question: "What is the primary method of lung cancer screening in high-risk individuals?",
+        options: [
+          "Chest X-ray",
+          "Low-dose CT scan",
+          "Blood tests",
+          "Bronchoscopy"
+        ],
+        answer: 1,
+        explanation: "Low-dose CT scans are recommended for lung cancer screening in high-risk individuals, such as heavy smokers."
+      },
+      {
+        question: "What lifestyle factor significantly reduces the risk of liver cancer?",
+        options: [
+          "Avoiding red meat",
+          "Getting vaccinated against hepatitis B",
+          "Drinking more water",
+          "Eating a low-salt diet"
+        ],
+        answer: 1,
+        explanation: "Vaccination against hepatitis B reduces the risk of liver cancer by preventing chronic hepatitis B infection."
+      },
+      {
+        question: "What is the key benefit of programmatic cancer screening?",
+        options: [
+          "It guarantees cancer prevention.",
+          "It provides a structured process with follow-ups and quality control.",
+          "It reduces the need for treatment.",
+          "It eliminates the risk of false positives."
+        ],
+        answer: 1,
+        explanation: "Programmatic screening ensures quality control, follow-ups, and consistency across large populations."
+      },
+      {
+        question: "What is the recommended screening interval for cervical cancer with Pap tests?",
+        options: [
+          "Every 1 year",
+          "Every 3 years",
+          "Every 5 years",
+          "Every 10 years"
+        ],
+        answer: 1,
+        explanation: "Cervical cancer screening with Pap tests is recommended every 3 years to detect precancerous changes early."
+      },
+      {
+        question: "What is a common barrier to cancer screening participation?",
+        options: [
+          "Lack of availability of tests.",
+          "Fear of diagnosis or procedures.",
+          "High cost of medications.",
+          "Increased risk of side effects."
+        ],
+        answer: 1,
+        explanation: "Fear of diagnosis or invasive procedures is a common barrier that prevents individuals from participating in cancer screenings."
+      }
+    ];
+
+    const quizContainer = document.getElementById("quiz");
+    const submitButton = document.getElementById("submit");
+    const resultContainer = document.getElementById("result");
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function loadQuiz() {
+      shuffle(quizData);
+      quizContainer.innerHTML = quizData.map((q, index) => `
+        <div class="question">
+          <p><strong>${index + 1}. ${q.question}</strong></p>
+          <ul class="options">
+            ${q.options.map((option, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="question${index}" value="${i}">
+                  ${option}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <p class="explanation hidden" id="explanation${index}">${q.explanation}</p>
+        </div>
+      `).join('');
+    }
+
+    function calculateScore() {
+      let score = 0;
+      quizData.forEach((q, index) => {
+        const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+        const explanation = document.getElementById(`explanation${index}`);
+        if (selectedOption && parseInt(selectedOption.value) === q.answer) {
+          score++;
+          explanation.classList.add("hidden");
+        } else {
+          explanation.classList.remove("hidden");
+        }
+      });
+      return score;
+    }
+
+    submitButton.addEventListener("click", () => {
+      const score = calculateScore();
+      resultContainer.textContent = `You scored ${score} out of ${quizData.length}!`;
+      resultContainer.classList.remove("hidden");
+    });
+
+    loadQuiz();
+  </script>
+</body>
+</html>
